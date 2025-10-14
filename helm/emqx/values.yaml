@@ -1,0 +1,96 @@
+# Configuration EMQX
+image:
+  repository: emqx/emqx
+  tag: "5.8.0"
+  pullPolicy: IfNotPresent
+
+# Nombre de réplicas pour le cluster (1 pour dev local)
+replicaCount: 1
+
+# Configuration du service
+service:
+  type: ClusterIP
+  ports:
+    mqtt: 1883
+    mqttssl: 8883
+    ws: 8083
+    wss: 8084
+    dashboard: 18083
+    
+# Configuration Ingress
+ingress:
+  enabled: true
+  className: "nginx"
+  hostname: "emqx.amazone.lan"
+  tls:
+    enabled: true
+    clusterIssuer: "local-amazone"
+
+# Configuration du stockage persistant
+persistence:
+  enabled: true
+  storageClass: ""  # Utilise la StorageClass par défaut
+  accessMode: ReadWriteOnce
+  size: 5Gi  # Réduit pour dev local
+
+# Configuration du clustering EMQX (simplifié pour dev local)
+emqx:
+  # Clustering manuel pour single-node en dev
+  clustering:
+    discovery_strategy: "manual"
+    k8s:
+      service_name: "emqx"
+      namespace: "default"
+      address_type: "ip"
+  
+  # Configuration des listeners
+  listeners:
+    tcp:
+      default:
+        bind: "0.0.0.0:1883"
+    ssl:
+      default:
+        bind: "0.0.0.0:8883"
+    ws:
+      default:
+        bind: "0.0.0.0:8083"
+    wss:
+      default:
+        bind: "0.0.0.0:8084"
+
+# Configuration des secrets (générés automatiquement)
+auth:
+  # Le nom d'utilisateur admin sera généré automatiquement
+  username: "admin"
+  # Le mot de passe sera généré automatiquement via un secret
+
+# Configuration des ressources (limité pour dev local)
+resources:
+  limits:
+    cpu: 200m
+    memory: 512Mi
+  requests:
+    cpu: 100m
+    memory: 256Mi
+
+# Configuration de la sonde de santé
+healthcheck:
+  enabled: true
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 3
+
+# Configuration des volumes additionnels pour la configuration
+volumes:
+  - name: emqx-data
+    persistentVolumeClaim:
+      claimName: emqx-data
+
+# Labels personnalisés
+labels:
+  app: emqx
+  component: mqtt-broker
+  
+# Annotations pour le déploiement
+annotations: {}

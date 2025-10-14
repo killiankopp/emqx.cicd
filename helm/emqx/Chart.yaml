@@ -1,0 +1,16 @@
+apiVersion: v2
+name: emqx
+description: EMQX MQTT Broker Helm Chart
+version: 1.0.0
+appVersion: "5.8.0"
+keywords:
+  - mqtt
+  - broker
+  - iot
+  - messaging
+home: https://www.emqx.io/
+sources:
+  - https://github.com/emqx/emqx
+maintainers:
+  - name: emqx-team
+    email: support@emqx.io
