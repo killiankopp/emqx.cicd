@@ -50,10 +50,10 @@ kubectl apply -f argocd/app.yaml
 kubectl get application -n argocd emqx
 
 # Vérifier les pods EMQX
-kubectl get pods -n default -l app=emqx
+kubectl get pods -n emqx -l app=emqx
 
 # Vérifier le cluster EMQX
-kubectl exec -it emqx-0 -- emqx_ctl cluster status
+kubectl exec -it emqx-0 -n emqx -- emqx_ctl cluster status
 ```
 
 ### 3. Accès au dashboard
@@ -63,8 +63,8 @@ kubectl exec -it emqx-0 -- emqx_ctl cluster status
 
 ```bash
 # Récupérer les credentials
-kubectl get secret emqx-auth -o jsonpath='{.data.admin-username}' | base64 -d
-kubectl get secret emqx-auth -o jsonpath='{.data.admin-password}' | base64 -d
+kubectl get secret emqx-auth -n emqx -o jsonpath='{.data.admin-username}' | base64 -d
+kubectl get secret emqx-auth -n emqx -o jsonpath='{.data.admin-password}' | base64 -d
 ```
 
 ## Configuration
@@ -92,10 +92,10 @@ kubectl get secret emqx-auth -o jsonpath='{.data.admin-password}' | base64 -d
 
 ```bash
 # Logs des pods
-kubectl logs -f emqx-0
+kubectl logs -f emqx-0 -n emqx
 
 # Status du cluster
-kubectl exec emqx-0 -- emqx_ctl cluster status
+kubectl exec emqx-0 -n emqx -- emqx_ctl cluster status
 
 # Métriques
 curl -s http://emqx.amazone.lan/api/v5/stats
@@ -114,10 +114,10 @@ curl -s http://emqx.amazone.lan/api/v5/stats
 
 ```bash
 # Vérifier les logs de clustering
-kubectl logs emqx-0 | grep -i cluster
+kubectl logs emqx-0 -n emqx | grep -i cluster
 
 # Forcer la reformation du cluster
-kubectl delete pods -l app=emqx
+kubectl delete pods -l app=emqx -n emqx
 ```
 
 ### Problèmes de connectivité
@@ -134,8 +134,8 @@ curl -k https://emqx.amazone.lan/api/v5/stats
 
 ```bash
 # Vérifier le certificat
-kubectl describe certificate emqx-tls
+kubectl describe certificate emqx-tls -n emqx
 
 # Renouveler le certificat
-kubectl delete certificate emqx-tls
+kubectl delete certificate emqx-tls -n emqx
 ```

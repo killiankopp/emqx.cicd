@@ -1,3 +1,6 @@
+# Configuration du namespace
+namespace: emqx
+
 # Configuration EMQX
 image:
   repository: emqx/emqx
@@ -40,7 +43,7 @@ emqx:
     discovery_strategy: "manual"
     k8s:
       service_name: "emqx"
-      namespace: "default"
+      namespace: "emqx"
       address_type: "ip"
   
   # Configuration des listeners

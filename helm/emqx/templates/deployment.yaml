@@ -32,7 +32,7 @@ spec:
         - name: EMQX_CLUSTER__K8S__SERVICE_NAME
           value: {{ include "emqx.fullname" . }}
         - name: EMQX_CLUSTER__K8S__NAMESPACE
-          value: {{ .Values.emqx.clustering.k8s.namespace }}
+          value: {{ .Values.namespace }}
         - name: EMQX_CLUSTER__K8S__ADDRESS_TYPE
           value: {{ .Values.emqx.clustering.k8s.address_type }}
         {{- end }}
