@@ -32,18 +32,30 @@ Déploiement production-ready d'EMQX sur cluster Kubernetes local (k3d) avec Git
 │           ├── deployment.yaml
 │           ├── service.yaml
 │           ├── ingress.yaml
-│           └── secret.yaml
+│           └── NOTES.txt
+├── scripts/
+│   └── create-emqx-secret.sh   # Script de création du Secret externe
 ```
 
 ## Déploiement
 
-### 1. Déploiement via ArgoCD
+### 1. Créer le Secret externe (une fois)
+
+Le chart n'inclut plus le Secret pour éviter les rotations via ArgoCD. Crée-le si absent:
+
+```bash
+./scripts/create-emqx-secret.sh emqx emqx-auth
+```
+
+Variables optionnelles: EMQX_ADMIN_USERNAME, EMQX_ADMIN_PASSWORD, EMQX_ERLANG_COOKIE
+
+### 2. Déploiement via ArgoCD
 
 ```bash
 kubectl apply -f argocd/app.yaml
 ```
 
-### 2. Vérification du déploiement
+### 3. Vérification du déploiement
 
 ```bash
 # Vérifier l'application ArgoCD
@@ -56,15 +68,15 @@ kubectl get pods -n emqx -l app=emqx
 kubectl exec -it emqx-0 -n emqx -- emqx_ctl cluster status
 ```
 
-### 3. Accès au dashboard
+### 4. Accès au dashboard
 
-- URL: https://emqx.amazone.lan/dashboard
+- URL: <https://emqx.amazone.lan/dashboard>
 - Credentials: Générés automatiquement (voir secrets)
 
 ```bash
 # Récupérer les credentials
-kubectl get secret emqx-auth -n emqx -o jsonpath='{.data.admin-username}' | base64 -d
-kubectl get secret emqx-auth -n emqx -o jsonpath='{.data.admin-password}' | base64 -d
+kubectl get secret emqx-auth -n emqx -o jsonpath='{.data.admin-username}' | base64 -d; echo
+kubectl get secret emqx-auth -n emqx -o jsonpath='{.data.admin-password}' | base64 -d; echo
 ```
 
 ## Configuration
@@ -103,7 +115,7 @@ curl -s http://emqx.amazone.lan/api/v5/stats
 
 ## Limitations et avertissements
 
-- ⚠️ **Secrets auto-générés**: Les mots de passe sont générés aléatoirement à chaque déploiement
+- ✅ **Secrets externes**: Le Secret est géré hors chart pour éviter toute rotation lors des sync ArgoCD
 - ⚠️ **Certificat TLS**: Utilise le ClusterIssuer local, non valide en production Internet
 - ⚠️ **Pas de backup automatique**: Configurer la sauvegarde des données persistantes
 - ⚠️ **Monitoring basique**: Pas de Prometheus/Grafana intégré

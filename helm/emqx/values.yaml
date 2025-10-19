@@ -65,6 +65,10 @@ emqx:
 auth:
   # Le nom d'utilisateur admin sera généré automatiquement
   username: "admin"
+  # Secret Kubernetes externe contenant admin-username, admin-password et erlang-cookie
+  secretName: "emqx-auth"
+  # Ne pas gérer le secret dans le chart par défaut (ArgoCD ne le rotatera pas)
+  manageSecret: false
   # Le mot de passe sera généré automatiquement via un secret
 
 # Configuration des ressources (limité pour dev local)

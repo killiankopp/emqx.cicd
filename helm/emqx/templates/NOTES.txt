@@ -7,14 +7,14 @@ EMQX Dashboard access
 Retrieve admin credentials from the Kubernetes Secret (initial values):
 
   Namespace: {{ .Release.Namespace }}
-  Secret: {{ include "emqx.fullname" . }}-auth
+  Secret: {{ .Values.auth.secretName }}
 
   Username:
-    kubectl -n {{ .Release.Namespace }} get secret {{ include "emqx.fullname" . }}-auth \
+  kubectl -n {{ .Release.Namespace }} get secret {{ .Values.auth.secretName }} \
       -o jsonpath='{.data.admin-username}' | base64 -d; echo
 
   Password:
-    kubectl -n {{ .Release.Namespace }} get secret {{ include "emqx.fullname" . }}-auth \
+  kubectl -n {{ .Release.Namespace }} get secret {{ .Values.auth.secretName }} \
       -o jsonpath='{.data.admin-password}' | base64 -d; echo
 
 Important:

@@ -39,17 +39,17 @@ spec:
         - name: EMQX_DASHBOARD__DEFAULT_USERNAME
           valueFrom:
             secretKeyRef:
-              name: {{ include "emqx.fullname" . }}-auth
+              name: {{ .Values.auth.secretName }}
               key: admin-username
         - name: EMQX_DASHBOARD__DEFAULT_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: {{ include "emqx.fullname" . }}-auth
+              name: {{ .Values.auth.secretName }}
               key: admin-password
         - name: EMQX_NODE__COOKIE
           valueFrom:
             secretKeyRef:
-              name: {{ include "emqx.fullname" . }}-auth
+              name: {{ .Values.auth.secretName }}
               key: erlang-cookie
         ports:
         - name: mqtt
