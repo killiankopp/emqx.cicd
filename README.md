@@ -139,3 +139,4 @@ kubectl describe certificate emqx-tls -n emqx
 # Renouveler le certificat
 kubectl delete certificate emqx-tls -n emqx
 ```
+
