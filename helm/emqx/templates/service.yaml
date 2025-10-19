@@ -65,5 +65,9 @@ spec:
     port: {{ .Values.service.ports.wss }}
     targetPort: wss
     protocol: TCP
+  - name: dashboard
+    port: {{ .Values.service.ports.dashboard }}
+    targetPort: dashboard
+    protocol: TCP
   selector:
     {{- include "emqx.selectorLabels" . | nindent 4 }}
