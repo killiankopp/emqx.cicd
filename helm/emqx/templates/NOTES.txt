@@ -1,0 +1,38 @@
+EMQX Dashboard access
+
+- URL:
+  - Ingress: {{- if .Values.ingress.enabled }} {{ if .Values.ingress.tls.enabled }}https{{ else }}http{{ end }}://{{ .Values.ingress.hostname }}/ {{- else }} (Ingress disabled) {{- end }}
+  - LoadBalancer: http://<EXTERNAL_IP>:{{ .Values.service.ports.dashboard }}
+
+Retrieve admin credentials from the Kubernetes Secret (initial values):
+
+  Namespace: {{ .Release.Namespace }}
+  Secret: {{ include "emqx.fullname" . }}-auth
+
+  Username:
+    kubectl -n {{ .Release.Namespace }} get secret {{ include "emqx.fullname" . }}-auth \
+      -o jsonpath='{.data.admin-username}' | base64 -d; echo
+
+  Password:
+    kubectl -n {{ .Release.Namespace }} get secret {{ include "emqx.fullname" . }}-auth \
+      -o jsonpath='{.data.admin-password}' | base64 -d; echo
+
+Important:
+- These credentials are applied only on the first startup. If persistence is enabled and EMQX has already initialized users, changing the Secret will NOT change the actual dashboard password.
+
+If the secret password does not work (likely due to persisted state), reset the dashboard password from inside the EMQX pod:
+
+  POD=$(kubectl -n {{ .Release.Namespace }} get pods \
+    -l app.kubernetes.io/name={{ include "emqx.name" . }},app.kubernetes.io/instance={{ .Release.Name }} \
+    -o jsonpath='{.items[0].metadata.name}')
+
+  # List existing admin users
+  kubectl -n {{ .Release.Namespace }} exec -it "$POD" -- emqx ctl admins list
+
+  # Reset password for user 'admin'
+  kubectl -n {{ .Release.Namespace }} exec -it "$POD" -- emqx ctl admins passwd admin 'ChangeMe123!'
+
+  # (Optional) Create a new admin user
+  kubectl -n {{ .Release.Namespace }} exec -it "$POD" -- emqx ctl admins add myadmin 'S3curePass!' 'local admin'
+
+After resetting, log in to the Dashboard with the updated credentials.

@@ -20,12 +20,12 @@ spec:
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         env:
-        - name: EMQX_NODE_NAME
-          value: "emqx@$(POD_IP)"
         - name: POD_IP
           valueFrom:
             fieldRef:
               fieldPath: status.podIP
+        - name: EMQX_NODE__NAME
+          value: "emqx@$(POD_IP)"
         - name: EMQX_CLUSTER__DISCOVERY_STRATEGY
           value: {{ .Values.emqx.clustering.discovery_strategy }}
         {{- if eq .Values.emqx.clustering.discovery_strategy "k8s" }}
